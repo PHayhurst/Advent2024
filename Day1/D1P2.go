@@ -5,18 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
 	"strconv"
 )
 
-func absIntDiff(a, b int) int {
-	if a > b {
-		return a - b
-	}
-	return b - a
-}
-
-func d1p1() {
+func main() {
 	file, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -27,8 +19,8 @@ func d1p1() {
 	scanner.Split(bufio.ScanWords)
 
 	wordCount := 0
+	frequencyMap := make(map[int]int)
 	var leftSidenumbers []int
-	var rightSidenumbers []int
 
 	for scanner.Scan() {
 		wordCount++
@@ -38,10 +30,11 @@ func d1p1() {
 			fmt.Printf("Invalid number: %s (Error: %v)\n", scanner.Text(), err)
 			continue
 		}
-		if(wordCount%2 == 0){
-			leftSidenumbers = append(leftSidenumbers, currNum);
-		}else{
-			rightSidenumbers = append(rightSidenumbers, currNum)
+
+		if wordCount%2 == 0 {
+			leftSidenumbers = append(leftSidenumbers, currNum)
+		} else {
+			frequencyMap[currNum] += 1
 		}
 	}
 
@@ -49,13 +42,10 @@ func d1p1() {
 		log.Fatalf("Error reading file: %v", err)
 	}
 
-	sort.Ints(leftSidenumbers);
-	sort.Ints(rightSidenumbers);
-	
-	runningTotalDifference := 0
+	runningTotalSimilarityScore := 0
 	for i := 0; i < len(leftSidenumbers); i++ {
-		
-		runningTotalDifference += absIntDiff(leftSidenumbers[i], rightSidenumbers[i])
+		runningTotalSimilarityScore += leftSidenumbers[i] * frequencyMap[leftSidenumbers[i]]
 	}
-	fmt.Printf("Total Difference: %d\n", runningTotalDifference)
+
+	fmt.Printf("Total Similarity Score: %d\n", runningTotalSimilarityScore)
 }
